@@ -1,3 +1,4 @@
+package model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.time.LocalDate;
@@ -5,9 +6,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter; 
-import java.util.Scanner; 
+import java.util.Scanner;
+
+import model.categorias.*;
+
 import java.util.Locale; 
-import categorias.*; 
 
 public class ControleEstoque {
     private ArrayList<Produto> produtos = new ArrayList<>();
@@ -204,17 +207,26 @@ public class ControleEstoque {
         }
     }
 
-    private Categoria getCategoriaPorNome(String nome) {
-        if (nome.equals("Componente de Hardware")) {
-            return new ComponenteHardware();
-        } else if (nome.equals("Periférico")) {
-            return new Periferico();
-        } else if (nome.equals("Acessorio")) {
-            return new Acessorio();
-        } else if (nome.equals("Outro produto")) {
-            return new OutroProduto();
+    public Categoria getCategoriaPorNome(String nome) {
+        if (nome == null) {
+            return null;
         }
-        return null;
+        switch (nome.trim()) {
+            case "Componente de Hardware":
+                return new ComponenteHardware();
+            
+            case "Periférico":
+                return new Periferico();
+            
+            case "Acessorio":
+                return new Acessorio();
+
+            case "Outro Produto":
+                return new OutroProduto();
+                
+            default:
+                return null;
+        }
     }
 
     private Produto findProdutoPorCodigo(int codigo) {
@@ -225,4 +237,5 @@ public class ControleEstoque {
         }
         return null; 
     }
+    
 }

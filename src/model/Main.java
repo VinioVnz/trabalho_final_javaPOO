@@ -1,6 +1,7 @@
+package model;
 import java.time.LocalDate;
 
-import categorias.*; 
+import model.categorias.*; 
 
 public class Main {
     public static void main(String[] args) {

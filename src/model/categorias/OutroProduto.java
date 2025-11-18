@@ -1,4 +1,4 @@
-package categorias;
+package model.categorias;
 
 public class OutroProduto extends Categoria{
 

@@ -1,3 +1,4 @@
+package model;
 import java.time.LocalDate;
 
 public class EntradaEstoque extends MovimentoEstoque{
@@ -12,8 +13,5 @@ public class EntradaEstoque extends MovimentoEstoque{
     public void setValorUnitario(double valorUnitario) {
         this.valorUnitario = valorUnitario;
     }
-    
-    public void registrarEntrada(LocalDate data, Produto produto, int quantidade, double valorUnitario){
-        //rotina de registrar entrada
-    }
+
 }

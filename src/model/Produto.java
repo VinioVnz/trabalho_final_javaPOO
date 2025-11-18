@@ -1,4 +1,5 @@
-import categorias.Categoria;
+package model;
+import model.categorias.Categoria;
 
 public class Produto {
     private int codigo;

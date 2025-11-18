@@ -1,4 +1,4 @@
-package categorias;
+package model.categorias;
 
 public class Acessorio extends Categoria{
 
