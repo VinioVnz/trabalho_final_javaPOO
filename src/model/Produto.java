@@ -2,11 +2,20 @@ package model;
 import model.categorias.Categoria;
 
 public class Produto {
+    private static int proximoCodigo = 1;
     private int codigo;
     private String nome;
     private double precoUnitario;
     private int quantidade;
     private Categoria categoria;
+
+    public Produto(String nome, double precoUnitario, int quantidade, Categoria categoria) {
+        this.codigo = proximoCodigo++;
+        this.nome = nome;
+        this.precoUnitario = precoUnitario;
+        this.quantidade = quantidade;
+        this.categoria = categoria;
+    }
 
     public Produto(int codigo, String nome, double precoUnitario, int quantidade, Categoria categoria) {
         this.codigo = codigo;
@@ -14,8 +23,13 @@ public class Produto {
         this.precoUnitario = precoUnitario;
         this.quantidade = quantidade;
         this.categoria = categoria;
-    }
 
+        // Atualiza o contador global corretamente
+        if (codigo >= proximoCodigo) {
+            proximoCodigo = codigo + 1;
+        }
+    }
+    
     public int getCodigo() {
         return codigo;
     }
@@ -51,4 +65,7 @@ public class Produto {
         return quantidade * precoUnitario;
     }
     
+    public String getNomeCategoria(){
+        return categoria.getNome();
+    }
 }

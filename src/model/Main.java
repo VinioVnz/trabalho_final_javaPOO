@@ -11,9 +11,9 @@ public class Main {
         Categoria hardware = new ComponenteHardware();
         Categoria periferico = new Periferico();
         //add 10 ssds de inicio ao cadastrar
-        Produto p1 = new Produto(1, "SSD Kingston 480GB", 250.00, 10, hardware);
-        Produto p2 = new Produto(2, "Mouse Logitech", 70.00, 5, periferico);
-        Produto p3 = new Produto(3, "Mouse Logitech", 70.00, 5, periferico);
+        Produto p1 = new Produto("SSD Kingston 480GB", 250.00, 10, hardware);
+        Produto p2 = new Produto("Mouse Logitech", 70.00, 5, periferico);
+        Produto p3 = new Produto("Mouse Logitech", 70.00, 5, periferico);
 
 
         controle.adicionarProduto(p1);

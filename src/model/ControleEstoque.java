@@ -1,6 +1,7 @@
 package model;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.time.LocalDate;
 import java.io.File; 
 import java.io.FileNotFoundException;
@@ -207,7 +208,7 @@ public class ControleEstoque {
         }
     }
 
-    public Categoria getCategoriaPorNome(String nome) {
+     public Categoria getCategoriaPorNome(String nome) {
         if (nome == null) {
             return null;
         }
@@ -238,4 +239,14 @@ public class ControleEstoque {
         return null; 
     }
     
+    public void excluirProduto(int indice){
+        if(indice >=0 && indice < produtos.size()){
+            produtos.remove(indice);
+        }
+        gravarDados();
+    }
+
+    public List<Produto> getTodosProdutos(){
+        return new ArrayList<>(produtos);
+    }
 }

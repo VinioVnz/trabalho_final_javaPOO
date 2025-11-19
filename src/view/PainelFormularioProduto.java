@@ -15,12 +15,11 @@ import javax.swing.JTextField;
 
 import model.ControleEstoque;
 import model.Produto;
-import model.categorias.Acessorio;
+
 import model.categorias.Categoria;
-import model.categorias.ComponenteHardware;
+
 
 public class PainelFormularioProduto extends JPanel {
-    private JTextField campoId;
     private JTextField campoNome;
     private JTextField campoPrecoUni;
     private JTextField campoQuantidade;
@@ -35,13 +34,12 @@ public class PainelFormularioProduto extends JPanel {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel rotuloId = new JLabel("Id:");
         JLabel rotuloNome = new JLabel("Nome:");
         JLabel rotuloPrecoUni = new JLabel("Preco Unitário:");
         JLabel rotuloQuantidade = new JLabel("Quantidade:");
         JLabel rotuloCategoria = new JLabel("Categoria:");
 
-        campoId = new JTextField(3);
+        
         campoNome = new JTextField(20);
         campoPrecoUni = new JTextField(8);
         campoQuantidade = new JTextField(4);
@@ -53,13 +51,6 @@ public class PainelFormularioProduto extends JPanel {
 
         botaoCadastrar = new JButton("Salvar");
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        add(rotuloId, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        add(campoId, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -110,13 +101,13 @@ public class PainelFormularioProduto extends JPanel {
     }
 
     public Produto obterProdutoDoForulario(ControleEstoque controle) {
-        String textoId = campoId.getText().trim();
+
         String nome = campoNome.getText().trim();
         String textoPrecoUni = campoPrecoUni.getText().trim();
         String textoQuantidade = campoQuantidade.getText().trim();
         String nomeCategoria = (String) comboCategoria.getSelectedItem();
 
-        if (textoId.isEmpty() || nome.isEmpty() || textoPrecoUni.isEmpty() || textoQuantidade.isEmpty() || nomeCategoria == null) {
+        if (nome.isEmpty() || textoPrecoUni.isEmpty() || textoQuantidade.isEmpty() || nomeCategoria == null) {
             JOptionPane.showMessageDialog(this,
                     "Por favor, preencha todos os campos obrigatórios.",
                     "Campos Incompletos",
@@ -125,7 +116,7 @@ public class PainelFormularioProduto extends JPanel {
         }
 
         try {
-        int id = Integer.parseInt(textoId);
+
         double precoUni = Double.parseDouble(textoPrecoUni);
         int quantidade = Integer.parseInt(textoQuantidade);
 
@@ -140,7 +131,7 @@ public class PainelFormularioProduto extends JPanel {
             return null;
         }
 
-        return new Produto(id, nome, precoUni, quantidade, categoriaObj);
+        return new Produto(nome, precoUni, quantidade, categoriaObj);
 
     } catch (NumberFormatException e) {
         JOptionPane.showMessageDialog(this,
@@ -152,11 +143,11 @@ public class PainelFormularioProduto extends JPanel {
     }
 
     public void limparFormulario() {
-        campoId.setText("");
+
 		campoNome.setText("");
 		campoPrecoUni.setText("");
         campoQuantidade.setText("");
 		comboCategoria.setSelectedIndex(0);
-		campoId.requestFocus();
+        campoNome.requestFocus();
 	}
 }
