@@ -103,7 +103,7 @@ public class ControleEstoque {
 
                 String linha = tipo + CSV_SEPARATOR +
                                m.getData().toString() + CSV_SEPARATOR + 
-                               m.getProduto().getCodigo() + CSV_SEPARATOR +
+                               m.getProduto().getNome() + CSV_SEPARATOR +
                                m.getQuantidade() + CSV_SEPARATOR +
                                valorFormatado;
                 

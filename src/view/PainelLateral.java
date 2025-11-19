@@ -4,16 +4,21 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PainelLateral extends JPanel {
+    private JButton btnProdutos;
+    private JButton btnEntrada;
+    private JButton btnSaida;
+    private JButton btnSaldo;
+    private JButton btnMovimentos;
 
     public PainelLateral() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JButton btnProdutos = criarBotao("Produtos");
-        JButton btnEntrada = criarBotao("Registrar Entrada");
-        JButton btnSaida = criarBotao("Registrar Saída");
-        JButton btnSaldo = criarBotao("Consultar Saldo");
-        JButton btnMovimentos = criarBotao("Listar Movimentos");
+        btnProdutos = criarBotao("Produtos");
+        btnEntrada = criarBotao("Registrar Entrada");
+        btnSaida = criarBotao("Registrar Saída");
+        btnSaldo = criarBotao("Consultar Saldo");
+        btnMovimentos = criarBotao("Listar Movimentos");
 
         add(btnProdutos);
         add(Box.createVerticalStrut(8));
@@ -33,5 +38,12 @@ public class PainelLateral extends JPanel {
         botao.setMaximumSize(new Dimension(150, 35));
 
         return botao;
+    }
+
+    public void onProdutos(Runnable r) { btnProdutos.addActionListener(e -> r.run()); }
+    public void onEntrada(Runnable r) { btnEntrada.addActionListener(e -> r.run()); }
+    public void onSaida(Runnable r) { btnSaida.addActionListener(e -> r.run()); }
+    public void onSaldo(Runnable r) { btnSaldo.addActionListener(e -> r.run()); }
+    public void onMovimentos(Runnable r) { btnMovimentos.addActionListener(e -> r.run()); 
     }
 }

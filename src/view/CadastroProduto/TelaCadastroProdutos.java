@@ -1,6 +1,7 @@
-package view;
+package view.CadastroProduto;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import model.ControleEstoque;
 import model.Produto;
@@ -9,25 +10,18 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TelaCadastroProdutos extends JFrame{
+public class TelaCadastroProdutos extends JPanel{
     private ControleEstoque controle;
     private PainelFormularioProduto painelFormulario;
     private PainelTabelaProdutos painelTabela;
-    private PainelLateral painelLateral;
+    
 
 
     public TelaCadastroProdutos(){
-        setTitle("Cadastro de Produtos");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800,600);
-        setLocationRelativeTo(null);
 
         controle = new ControleEstoque();
         
         setLayout(new BorderLayout(10, 10));
-
-        painelLateral = new PainelLateral();
-        add(painelLateral, BorderLayout.WEST);
         
         painelFormulario = new PainelFormularioProduto();
         painelTabela = new PainelTabelaProdutos();

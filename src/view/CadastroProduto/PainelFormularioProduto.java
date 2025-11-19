@@ -1,4 +1,4 @@
-package view;
+package view.CadastroProduto;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
