@@ -45,7 +45,7 @@ public class PainelFormularioProduto extends JPanel {
         campoQuantidade = new JTextField(4);
 
         String[] categorias = { "Acessorio", "Componente de Hardware",
-                "Periférico", "Outro produto" };
+                "Periférico", "Outro Produto" };
 
         comboCategoria = new JComboBox<>(categorias);
 

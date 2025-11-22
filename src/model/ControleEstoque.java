@@ -1,17 +1,19 @@
 package model;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.time.LocalDate;
-import java.io.File; 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter; 
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 import model.categorias.*;
 
-import java.util.Locale; 
+import java.util.Locale;
 
 public class ControleEstoque {
     private ArrayList<Produto> produtos = new ArrayList<>();
@@ -19,42 +21,43 @@ public class ControleEstoque {
 
     private static final String PRODUTOS_CSV = "produtos.csv";
     private static final String MOVIMENTOS_CSV = "movimentos.csv";
-    private static final String CSV_SEPARATOR = ";"; 
-    
+    private static final String CSV_SEPARATOR = ";";
+
     public ControleEstoque() {
         recuperarProdutos();
         recuperarMovimentos();
     }
 
-    public void adicionarProduto(Produto produto){
+    public void adicionarProduto(Produto produto) {
         produtos.add(produto);
         gravarDados();
     }
 
-    public void registrarEntrada(EntradaEstoque entrada){
+    public void registrarEntrada(EntradaEstoque entrada) {
         movimentos.add(entrada);
         entrada.getProduto().setQuantidade(entrada.getProduto().getQuantidade() + entrada.getQuantidade());
         gravarDados();
     }
 
-    public void registrarSaida(SaidaEstoque saida){
+    public void registrarSaida(SaidaEstoque saida) {
         movimentos.add(saida);
         saida.getProduto().setQuantidade(
-            saida.getProduto().getQuantidade() - saida.getQuantidade()
-        );
+                saida.getProduto().getQuantidade() - saida.getQuantidade());
         gravarDados();
     }
 
-    public void listarMovimentos(){
+    public void listarMovimentos() {
         Collections.sort(movimentos);
-        for(MovimentoEstoque movimento : movimentos){
-            System.out.println(movimento.getData() + " | " + movimento.getProduto().getNome() + " | " + movimento.getQuantidade());
+        for (MovimentoEstoque movimento : movimentos) {
+            System.out.println(
+                    movimento.getData() + " | " + movimento.getProduto().getNome() + " | " + movimento.getQuantidade());
         }
     }
 
-    public void consultarSaldoAtual(){
-        for(Produto produto : produtos){
-            System.out.println(produto.getNome() + " | "+ produto.getQuantidade()+ "unidades | R$ " + produto.calcularValorTotal());
+    public void consultarSaldoAtual() {
+        for (Produto produto : produtos) {
+            System.out.println(produto.getNome() + " | " + produto.getQuantidade() + "unidades | R$ "
+                    + produto.calcularValorTotal());
         }
     }
 
@@ -64,18 +67,18 @@ public class ControleEstoque {
     }
 
     private void gravarProdutos() {
-       
-        try (PrintWriter writer = new PrintWriter(PRODUTOS_CSV)) { 
-            
+
+        try (PrintWriter writer = new PrintWriter(PRODUTOS_CSV)) {
+
             for (Produto p : produtos) {
                 String precoFormatado = String.format(Locale.US, "%.2f", p.getPrecoUnitario());
-                
+
                 String linha = p.getCodigo() + CSV_SEPARATOR +
-                               p.getNome() + CSV_SEPARATOR +
-                               precoFormatado + CSV_SEPARATOR +
-                               p.getQuantidade() + CSV_SEPARATOR +
-                               p.getCategoria().getNome();
-                
+                        p.getNome() + CSV_SEPARATOR +
+                        precoFormatado + CSV_SEPARATOR +
+                        p.getQuantidade() + CSV_SEPARATOR +
+                        p.getCategoria().getNome();
+
                 writer.println(linha);
             }
             System.out.println("Produtos gravados com sucesso (PrintWriter).");
@@ -86,30 +89,36 @@ public class ControleEstoque {
     }
 
     private void gravarMovimentos() {
-        try (PrintWriter writer = new PrintWriter(MOVIMENTOS_CSV)) {
+        // Se não houver movimentos, não grava nada
+        if (movimentos.isEmpty()) {
+            return;
+        }
 
-            for (MovimentoEstoque m : movimentos) {
-                String tipo = "";
-                double valorUnit = 0.0;
+        try (FileWriter fw = new FileWriter(MOVIMENTOS_CSV, true);
+                PrintWriter writer = new PrintWriter(fw)) {
 
-                if (m instanceof EntradaEstoque) {
-                    tipo = "ENTRADA";
-                    valorUnit = ((EntradaEstoque) m).getValorUnitario();
-                } else if (m instanceof SaidaEstoque) {
-                    tipo = "SAIDA";
-                }
-                
-                String valorFormatado = String.format(Locale.US, "%.2f", valorUnit);
+            // Pega somente o último movimento
+            MovimentoEstoque m = movimentos.get(movimentos.size() - 1);
 
-                String linha = tipo + CSV_SEPARATOR +
-                               m.getData().toString() + CSV_SEPARATOR + 
-                               m.getProduto().getNome() + CSV_SEPARATOR +
-                               m.getQuantidade() + CSV_SEPARATOR +
-                               valorFormatado;
-                
-                writer.println(linha);
+            String tipo;
+            double valorUnit = 0.0;
+
+            if (m instanceof EntradaEstoque entrada) {
+                tipo = "ENTRADA";
+                valorUnit = entrada.getValorUnitario();
+            } else {
+                tipo = "SAIDA";
             }
-            System.out.println("Movimentos gravados com sucesso (PrintWriter).");
+
+            String valorFormatado = String.format(Locale.US, "%.2f", valorUnit);
+
+            String linha = tipo + CSV_SEPARATOR +
+                    m.getData().toString() + CSV_SEPARATOR +
+                    m.getProduto().getCodigo() + CSV_SEPARATOR +
+                    m.getQuantidade() + CSV_SEPARATOR +
+                    valorFormatado;
+
+            writer.println(linha);
 
         } catch (IOException e) {
             System.err.println("Erro ao gravar movimentos: " + e.getMessage());
@@ -118,15 +127,15 @@ public class ControleEstoque {
 
     private void recuperarProdutos() {
         File arquivoProdutos = new File(PRODUTOS_CSV);
-        
+
         if (!arquivoProdutos.exists()) {
             System.out.println("Arquivo " + PRODUTOS_CSV + " não encontrado. Iniciando novo.");
             return;
         }
 
-        try (Scanner scannerArquivo = new Scanner(arquivoProdutos)) { 
-            
-            while (scannerArquivo.hasNextLine()) { 
+        try (Scanner scannerArquivo = new Scanner(arquivoProdutos)) {
+
+            while (scannerArquivo.hasNextLine()) {
                 String linha = scannerArquivo.nextLine();
 
                 Scanner scannerLinha = new Scanner(linha);
@@ -134,9 +143,9 @@ public class ControleEstoque {
                 scannerLinha.useLocale(Locale.US);
 
                 try {
-                    int codigo = scannerLinha.nextInt(); 
-                    String nome = scannerLinha.next(); 
-                    double preco = scannerLinha.nextDouble(); 
+                    int codigo = scannerLinha.nextInt();
+                    String nome = scannerLinha.next();
+                    double preco = scannerLinha.nextDouble();
                     int quantidade = scannerLinha.nextInt();
                     String categoriaNome = scannerLinha.next();
 
@@ -167,10 +176,10 @@ public class ControleEstoque {
             System.out.println("Arquivo " + MOVIMENTOS_CSV + " não encontrado. Iniciando novo.");
             return;
         }
-        
-        try (Scanner scannerArquivo = new Scanner(arquivoMovimentos)) { 
 
-            while (scannerArquivo.hasNextLine()) { 
+        try (Scanner scannerArquivo = new Scanner(arquivoMovimentos)) {
+
+            while (scannerArquivo.hasNextLine()) {
                 String linha = scannerArquivo.nextLine();
                 Scanner scannerLinha = new Scanner(linha);
                 scannerLinha.useDelimiter(CSV_SEPARATOR);
@@ -178,7 +187,7 @@ public class ControleEstoque {
 
                 try {
                     String tipo = scannerLinha.next();
-                    LocalDate data = LocalDate.parse(scannerLinha.next()); 
+                    LocalDate data = LocalDate.parse(scannerLinha.next());
                     int produtoCodigo = scannerLinha.nextInt();
                     int quantidade = scannerLinha.nextInt();
                     double valorUnit = scannerLinha.nextDouble();
@@ -208,45 +217,50 @@ public class ControleEstoque {
         }
     }
 
-     public Categoria getCategoriaPorNome(String nome) {
+    public Categoria getCategoriaPorNome(String nome) {
         if (nome == null) {
             return null;
         }
         switch (nome.trim()) {
             case "Componente de Hardware":
                 return new ComponenteHardware();
-            
+
             case "Periférico":
                 return new Periferico();
-            
+
             case "Acessorio":
                 return new Acessorio();
 
             case "Outro Produto":
                 return new OutroProduto();
-                
+
             default:
                 return null;
         }
     }
 
-    private Produto findProdutoPorCodigo(int codigo) {
+    public Produto findProdutoPorCodigo(int codigo) {
         for (Produto p : this.produtos) {
             if (p.getCodigo() == codigo) {
                 return p;
             }
         }
-        return null; 
+        return null;
     }
-    
-    public void excluirProduto(int indice){
-        if(indice >=0 && indice < produtos.size()){
+
+    public void excluirProduto(int indice) {
+        if (indice >= 0 && indice < produtos.size()) {
             produtos.remove(indice);
         }
         gravarDados();
     }
 
-    public List<Produto> getTodosProdutos(){
+    public List<Produto> getTodosProdutos() {
         return new ArrayList<>(produtos);
+    }
+
+    public SaldoCalculator.ResultadoSaldo calcularSaldoAtual() {
+        SaldoCalculator service = new SaldoCalculator();
+        return service.calcularSaldo(this.movimentos);
     }
 }
