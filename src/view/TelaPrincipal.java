@@ -14,7 +14,9 @@ import java.awt.*;
 public class TelaPrincipal extends JFrame {
     private CardLayout cardLayout;
     private JPanel painelConteudo;
+
     private ControleEstoque controleEstoque = new ControleEstoque();
+
     private TelaListarMovimentos telaListarMovimentos = new TelaListarMovimentos(controleEstoque);
     private TelaConsultarSaldo telaConsultarSaldo = new TelaConsultarSaldo(controleEstoque);
     private TelaCadastroProdutos telaProdutos = new TelaCadastroProdutos();
@@ -37,18 +39,22 @@ public class TelaPrincipal extends JFrame {
         painelConteudo.add(new TelaRegistrarEntrada(controleEstoque, telaListarMovimentos), "registrarEntrada");
         painelConteudo.add(new TelaRegistrarSaida(controleEstoque, telaListarMovimentos), "registrarSaida");
         painelConteudo.add(telaConsultarSaldo, "saldo");
+
         add(painelConteudo, BorderLayout.CENTER);
-        TelaCadastroProdutos telaProdutos = new TelaCadastroProdutos();
+
         painelLateral.onProdutos(() -> {
             telaProdutos.getPainelTabelaProdutos()
                     .atualizarTabela(controleEstoque.getTodosProdutos());
             mostrarTela("produtos");
         });
+
         painelLateral.onMovimentos(() -> {
             telaListarMovimentos.carregarMovimentosDoCSV();
             mostrarTela("movimentos");
         });
+
         painelLateral.onEntrada(() -> mostrarTela("registrarEntrada"));
+
         painelLateral.onSaida(() -> {
             telaListarMovimentos.carregarMovimentosDoCSV();
             mostrarTela("registrarSaida");

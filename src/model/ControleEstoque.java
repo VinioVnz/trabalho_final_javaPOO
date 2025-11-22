@@ -2,6 +2,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.time.LocalDate;
 import java.io.File;
@@ -10,6 +11,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 import model.categorias.*;
 
@@ -34,10 +37,28 @@ public class ControleEstoque {
     }
 
     public void registrarEntrada(EntradaEstoque entrada) {
-        movimentos.add(entrada);
-        entrada.getProduto().setQuantidade(entrada.getProduto().getQuantidade() + entrada.getQuantidade());
-        gravarDados();
-    }
+    movimentos.add(entrada);
+
+    Produto p = entrada.getProduto();
+    int antes = p.getQuantidade();
+    int depois = antes + entrada.getQuantidade();
+
+    p.setQuantidade(depois);
+    gravarDados();
+
+    double valorTotal = p.calcularValorTotal();
+
+    JOptionPane.showMessageDialog(null,
+            "Entrada registrada!\n\n" +
+                    "Produto: " + p.getNome() + "\n" +
+                    "Quantidade adicionada: " + entrada.getQuantidade() + "\n" +
+                    "Saldo anterior: " + antes + "\n" +
+                    "Saldo atual: " + depois + "\n" +
+                    "Valor total atual: R$ " + String.format("%.2f", valorTotal),
+            "Entrada registrada",
+            JOptionPane.INFORMATION_MESSAGE);
+}
+
 
     public void registrarSaida(SaidaEstoque saida) {
         movimentos.add(saida);
@@ -48,9 +69,12 @@ public class ControleEstoque {
 
     public void listarMovimentos() {
         Collections.sort(movimentos);
+
         for (MovimentoEstoque movimento : movimentos) {
             System.out.println(
-                    movimento.getData() + " | " + movimento.getProduto().getNome() + " | " + movimento.getQuantidade());
+                    movimento.getData() + " | " +
+                            movimento.getProduto().getNome() + " | " +
+                            movimento.getQuantidade());
         }
     }
 
@@ -89,36 +113,35 @@ public class ControleEstoque {
     }
 
     private void gravarMovimentos() {
-        // Se não houver movimentos, não grava nada
+        // Se não houver movimentos, não faz nada
         if (movimentos.isEmpty()) {
             return;
         }
 
-        try (FileWriter fw = new FileWriter(MOVIMENTOS_CSV, true);
-                PrintWriter writer = new PrintWriter(fw)) {
+        // Ordenar movimentos antes de gravar
+        Collections.sort(movimentos);
 
-            // Pega somente o último movimento
-            MovimentoEstoque m = movimentos.get(movimentos.size() - 1);
+        try (PrintWriter writer = new PrintWriter(MOVIMENTOS_CSV)) {
 
-            String tipo;
-            double valorUnit = 0.0;
+            for (MovimentoEstoque m : movimentos) {
 
-            if (m instanceof EntradaEstoque entrada) {
-                tipo = "ENTRADA";
-                valorUnit = entrada.getValorUnitario();
-            } else {
-                tipo = "SAIDA";
+                String tipo = (m instanceof EntradaEstoque) ? "ENTRADA" : "SAIDA";
+                double valorUnit = 0.0;
+
+                if (m instanceof EntradaEstoque entrada) {
+                    valorUnit = entrada.getValorUnitario();
+                }
+
+                String valorFormatado = String.format(Locale.US, "%.2f", valorUnit);
+
+                String linha = tipo + CSV_SEPARATOR +
+                        m.getData() + CSV_SEPARATOR +
+                        m.getProduto().getCodigo() + CSV_SEPARATOR +
+                        m.getQuantidade() + CSV_SEPARATOR +
+                        valorFormatado;
+
+                writer.println(linha);
             }
-
-            String valorFormatado = String.format(Locale.US, "%.2f", valorUnit);
-
-            String linha = tipo + CSV_SEPARATOR +
-                    m.getData().toString() + CSV_SEPARATOR +
-                    m.getProduto().getCodigo() + CSV_SEPARATOR +
-                    m.getQuantidade() + CSV_SEPARATOR +
-                    valorFormatado;
-
-            writer.println(linha);
 
         } catch (IOException e) {
             System.err.println("Erro ao gravar movimentos: " + e.getMessage());
@@ -262,5 +285,9 @@ public class ControleEstoque {
     public SaldoCalculator.ResultadoSaldo calcularSaldoAtual() {
         SaldoCalculator service = new SaldoCalculator();
         return service.calcularSaldo(this.movimentos);
+    }
+
+    public List<MovimentoEstoque> getMovimentoEstoques(){
+        return movimentos;
     }
 }
