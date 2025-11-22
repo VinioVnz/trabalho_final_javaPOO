@@ -38,7 +38,7 @@ public class TelaPrincipal extends JFrame {
         painelConteudo.add(new TelaRegistrarSaida(controleEstoque, telaListarMovimentos), "registrarSaida");
         painelConteudo.add(telaConsultarSaldo, "saldo");
         add(painelConteudo, BorderLayout.CENTER);
-
+        TelaCadastroProdutos telaProdutos = new TelaCadastroProdutos();
         painelLateral.onProdutos(() -> {
             telaProdutos.getPainelTabelaProdutos()
                     .atualizarTabela(controleEstoque.getTodosProdutos());
