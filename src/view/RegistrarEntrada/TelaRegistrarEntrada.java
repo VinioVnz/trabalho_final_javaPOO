@@ -11,11 +11,31 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Painel para registrar entradas de produtos no estoque.
+ *
+ * Fornece campos para informar código do produto, quantidade, data e valor
+ * unitário, executando a lógica de registro e atualização das telas
+ * relacionadas.
+ * </p>
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class TelaRegistrarEntrada extends JPanel {
 
     private ControleEstoque controle;
     private TelaListarMovimentos telaListarMovimentos;
 
+    /**
+     * Construtor que recebe o controle de estoque e a referência à tela de listagem
+     * de movimentos para atualização após o registro.
+     *
+     * @param controle instância de {@link ControleEstoque}
+     * @param telaMovimentos referência para atualização de lista de movimentos
+     */
     public TelaRegistrarEntrada(ControleEstoque controle, TelaListarMovimentos telaMovimentos) {
         this.controle = controle;
         this.telaListarMovimentos = telaMovimentos;
@@ -27,14 +47,12 @@ public class TelaRegistrarEntrada extends JPanel {
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         add(titulo, BorderLayout.NORTH);
 
-        // Painel central
         JPanel painelForm = new JPanel(new GridBagLayout());
         painelForm.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campos
         JLabel lblCodigo = new JLabel("Código do Produto:");
         JTextField txtCodigo = new JTextField();
 
@@ -55,7 +73,6 @@ public class TelaRegistrarEntrada extends JPanel {
         txtQuantidade.setPreferredSize(new Dimension(200, 30));
         txtValor.setPreferredSize(new Dimension(200, 30));
 
-        // Adicionando ao painel
         c.gridx = 0;
         c.gridy = 0;
         painelForm.add(lblCodigo, c);
@@ -92,7 +109,6 @@ public class TelaRegistrarEntrada extends JPanel {
 
         painelEntradas.carregarEntradas(controle.getMovimentoEstoques());
 
-        // Lógica do botão
         btnRegistrar.addActionListener(e -> {
             try {
                 int codigo = Integer.parseInt(txtCodigo.getText());
@@ -114,11 +130,9 @@ public class TelaRegistrarEntrada extends JPanel {
                     return;
                 }
 
-                // ======= VALORES ANTES DA ENTRADA ========
                 int quantidadeAntes = p.getQuantidade();
                 double valorAntes = quantidadeAntes * p.getPrecoUnitario();
 
-                // Registrar a entrada
                 EntradaEstoque entrada = new EntradaEstoque(
                         data,
                         p,
@@ -127,17 +141,14 @@ public class TelaRegistrarEntrada extends JPanel {
 
                 controle.registrarEntrada(entrada);
 
-                // ======= VALORES DEPOIS DA ENTRADA ========
                 int quantidadeDepois = quantidadeAntes + quantidadeEntrada;
                 double impacto = quantidadeEntrada * valorUnitario;
 
                 double valorDepois = valorAntes + impacto;
 
-                // Atualiza tabela
                 painelEntradas.carregarEntradas(controle.getMovimentoEstoques());
                 telaListarMovimentos.carregarMovimentosDoCSV();
 
-                // ======= EXTRATO DO IMPACTO ========
                 String msg = String.format(
                         "Entrada registrada!\n\n" +
                                 "ANTES DA ENTRADA:\n" +
@@ -158,7 +169,6 @@ public class TelaRegistrarEntrada extends JPanel {
 
                 JOptionPane.showMessageDialog(this, msg, "Impacto no Saldo", JOptionPane.INFORMATION_MESSAGE);
 
-                // Limpar campos
                 txtCodigo.setText("");
                 txtQuantidade.setText("");
                 txtValor.setText("");
@@ -169,6 +179,12 @@ public class TelaRegistrarEntrada extends JPanel {
         });
     }
 
+    /**
+     * Converte o texto do campo de data para {@link LocalDate} usando o formato dd/MM/yyyy.
+     *
+     * @param txtData campo de texto contendo a data
+     * @return objeto {@link LocalDate} ou {@code null} se o formato for inválido
+     */
     public static LocalDate parseDataDoCampo(JTextField txtData) {
         String dataStr = txtData.getText().trim();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

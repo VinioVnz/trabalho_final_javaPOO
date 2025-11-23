@@ -11,6 +11,18 @@ import view.RegistrarSaida.TelaRegistrarSaida;
 
 import java.awt.*;
 
+/**
+ * Janela principal da aplicação contendo navegação entre as telas.
+ * <p>
+ * A classe monta a interface principal, instancia o controle de estoque e
+ * sincroniza as ações dos botões laterais com as telas correspondentes.
+ * </p>
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class TelaPrincipal extends JFrame {
 
     private CardLayout cardLayout;
@@ -23,6 +35,9 @@ public class TelaPrincipal extends JFrame {
     private TelaConsultarSaldo telaConsultarSaldo = new TelaConsultarSaldo(controleEstoque);
     private TelaCadastroProdutos telaProdutos = new TelaCadastroProdutos(controleEstoque);
 
+    /**
+     * Constrói a tela principal e configura a navegação entre as demais telas.
+     */
     public TelaPrincipal() {
 
         setTitle("Sistema loja");
@@ -76,6 +91,11 @@ public class TelaPrincipal extends JFrame {
         });
     }
 
+    /**
+     * Exibe a tela identificada pelo nome no painel de conteúdo.
+     *
+     * @param nome identificador da tela a ser exibida
+     */
     private void mostrarTela(String nome) {
         cardLayout.show(painelConteudo, nome);
     }

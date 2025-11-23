@@ -15,11 +15,25 @@ import java.awt.event.ActionListener;
 
 import model.Produto;
 
+/**
+ * Painel que exibe a tabela de produtos cadastrados e fornece ação de remoção.
+ *
+ * A tabela é atualizável a partir de uma lista de {@link Produto} e expõe
+ * métodos para obter a linha selecionada e definir a ação do botão remover.
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class PainelTabelaProdutos extends JPanel{
     private JTable tabela;
 	private DefaultTableModel modeloTabela;
 	private JButton botaoRemover;
 
+    /**
+     * Construtor que inicializa a tabela e o botão de remoção.
+     */
     public PainelTabelaProdutos() {
         setLayout(new BorderLayout(10,10));
         setBorder(BorderFactory.createTitledBorder("Produtos Cadastrados"));
@@ -43,6 +57,11 @@ public class PainelTabelaProdutos extends JPanel{
 
     }
 
+    /**
+     * Atualiza o conteúdo da tabela com a lista de produtos fornecida.
+     *
+     * @param produtos lista de produtos a ser exibida
+     */
     public void atualizarTabela(List<Produto> produtos ){
         modeloTabela.setRowCount(0);
 
@@ -52,10 +71,20 @@ public class PainelTabelaProdutos extends JPanel{
         }
     }   
 
+    /**
+     * Retorna o índice da linha atualmente selecionada na tabela.
+     *
+     * @return índice da linha selecionada ou -1 se nenhuma linha estiver selecionada
+     */
     public int obterLinhaSelecionada() {
 		return tabela.getSelectedRow();
 	}
 
+	/**
+	 * Define a ação a ser executada quando o botão remover for acionado.
+	 *
+	 * @param acao listener de ação a ser associado ao botão remover
+	 */
 	public void definirAcaoBotaoRemover(ActionListener acao) {
 		botaoRemover.addActionListener(acao);
 	}

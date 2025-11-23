@@ -8,6 +8,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
 
+/**
+ * Tela para consulta do saldo atual do estoque.
+ * <p>
+ * Exibe quantidade total, valor total do estoque e custo médio por unidade.
+ * </p>
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class TelaConsultarSaldo extends JPanel {
 
     private ControleEstoque controle;
@@ -15,6 +26,11 @@ public class TelaConsultarSaldo extends JPanel {
     private JLabel lblValorTotal;
     private JLabel lblCustoMedio;
 
+    /**
+     * Construtor que configura a interface da consulta de saldo.
+     *
+     * @param controle instância de {@link ControleEstoque} usada para obter dados
+     */
     public TelaConsultarSaldo(ControleEstoque controle) {
         this.controle = controle;
 
@@ -47,19 +63,19 @@ public class TelaConsultarSaldo extends JPanel {
         add(btnAtualizar, BorderLayout.SOUTH);
     }
 
+    /**
+     * Atualiza os valores exibidos na tela com base no cálculo do saldo.
+     */
     public void atualizarSaldo() {
         SaldoCalculator.ResultadoSaldo saldo = controle.calcularSaldoAtual();
 
-        // Soma a quantidade total de todos os produtos
         int quantidadeTotal = 0;
         for (Map.Entry<Produto, Integer> entry : saldo.getQuantidadesPorProduto().entrySet()) {
             quantidadeTotal += entry.getValue();
         }
 
-        // Valor total
         double valorTotal = saldo.getValorTotal();
 
-        // Custo médio
         double custoMedio = quantidadeTotal > 0 ? valorTotal / quantidadeTotal : 0.0;
 
         lblQuantidade.setText(String.valueOf(quantidadeTotal));

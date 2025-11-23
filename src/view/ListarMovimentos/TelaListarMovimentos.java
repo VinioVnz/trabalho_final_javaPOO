@@ -10,12 +10,29 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ * Tela que lista os movimentos de estoque a partir do arquivo CSV.
+ *
+ * Exibe uma tabela contendo tipo, data, produto, quantidade e valor unitário
+ * para cada movimento registrado.
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class TelaListarMovimentos extends JPanel {
 
     private JTable tabela;
     private DefaultTableModel modeloTabela;
     private ControleEstoque controle;
 
+    /**
+     * Construtor que recebe o controle de estoque utilizado para mapear
+     * identificadores de produto para seus nomes.
+     *
+     * @param controle instância de {@link ControleEstoque}
+     */
     public TelaListarMovimentos(ControleEstoque controle) {
         this.controle = controle;
         setLayout(new BorderLayout());
@@ -39,6 +56,9 @@ public class TelaListarMovimentos extends JPanel {
         carregarMovimentosDoCSV();
     }
 
+    /**
+     * Carrega os movimentos presentes no arquivo CSV e os exibe na tabela.
+     */
     public void carregarMovimentosDoCSV() {
         modeloTabela.setRowCount(0);
 
@@ -62,11 +82,11 @@ public class TelaListarMovimentos extends JPanel {
                             : "PRODUTO EXCLUÍDO (ID: " + id + ")";
 
                     modeloTabela.addRow(new Object[] {
-                            partes[0], // Tipo
-                            partes[1], // Data
-                            nomeProduto, // Nome ou aviso
-                            partes[3], // Quantidade
-                            partes[4] // Valor
+                            partes[0],
+                            partes[1],
+                            nomeProduto,
+                            partes[3],
+                            partes[4]
                     });
                 }
             }

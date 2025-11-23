@@ -19,6 +19,17 @@ import model.Produto;
 import model.categorias.Categoria;
 
 
+/**
+ * Painel contendo o formulário para cadastro de produtos.
+ *
+ * Fornece campos para nome, preço, quantidade e seleção de categoria,
+ * bem como ações para cadastrar e limpar o formulário.
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class PainelFormularioProduto extends JPanel {
     private JTextField campoNome;
     private JTextField campoPrecoUni;
@@ -26,6 +37,9 @@ public class PainelFormularioProduto extends JPanel {
     private JComboBox<String> comboCategoria;
     private JButton botaoCadastrar;
 
+    /**
+     * Construtor que cria e posiciona os componentes do formulário.
+     */
     public PainelFormularioProduto() {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createTitledBorder("Cadastro de Produtos"));
@@ -96,10 +110,21 @@ public class PainelFormularioProduto extends JPanel {
 
     }
 
+    /**
+     * Define a ação a ser executada quando o botão de cadastrar for acionado.
+     *
+     * @param acao listener de ação a ser associado ao botão
+     */
     public void definirAcaoBotaoCadastrar(ActionListener acao) {
         botaoCadastrar.addActionListener(acao);
     }
 
+    /**
+     * Recupera os valores do formulário e constrói um {@link Produto} válido.
+     *
+     * @param controle instância de {@link ControleEstoque} para resolução da categoria
+     * @return novo {@link Produto} ou {@code null} em caso de dados inválidos
+     */
     public Produto obterProdutoDoForulario(ControleEstoque controle) {
 
         String nome = campoNome.getText().trim();
@@ -142,6 +167,9 @@ public class PainelFormularioProduto extends JPanel {
     }
     }
 
+    /**
+     * Limpa todos os campos do formulário e reposiciona o foco.
+     */
     public void limparFormulario() {
 
 		campoNome.setText("");

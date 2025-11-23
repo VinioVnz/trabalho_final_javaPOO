@@ -18,6 +18,18 @@ import model.categorias.*;
 
 import java.util.Locale;
 
+/**
+ * Responsável pelo gerenciamento do conjunto de produtos e movimentos de estoque.
+ * <p>
+ * A classe fornece operações para adicionar, registrar entradas e saídas,
+ * persistir dados em CSV e recuperar informações persistidas.
+ * </p>
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class ControleEstoque {
     private ArrayList<Produto> produtos = new ArrayList<>();
     private ArrayList<MovimentoEstoque> movimentos = new ArrayList<>();
@@ -31,35 +43,56 @@ public class ControleEstoque {
         recuperarMovimentos();
     }
 
+    /**
+     * Construtor padrão que inicializa o controle de estoque carregando os
+     * dados persistidos de produtos e movimentos.
+     */
+
+    /**
+     * Adiciona um novo produto ao controle de estoque e persiste os dados.
+     *
+     * @param produto instância de {@link Produto} a ser adicionada
+     */
     public void adicionarProduto(Produto produto) {
         produtos.add(produto);
         gravarDados();
     }
 
-    public void registrarEntrada(EntradaEstoque entrada) {
-    movimentos.add(entrada);
+        /**
+         * Registra uma entrada de estoque: atualiza a quantidade do produto,
+         * persiste os dados e exibe um resumo da operação.
+         *
+         * @param entrada instância de {@link EntradaEstoque} contendo os dados da entrada
+         */
+        public void registrarEntrada(EntradaEstoque entrada) {
+        movimentos.add(entrada);
 
-    Produto p = entrada.getProduto();
-    int antes = p.getQuantidade();
-    int depois = antes + entrada.getQuantidade();
+        Produto p = entrada.getProduto();
+        int antes = p.getQuantidade();
+        int depois = antes + entrada.getQuantidade();
 
-    p.setQuantidade(depois);
-    gravarDados();
+        p.setQuantidade(depois);
+        gravarDados();
 
-    double valorTotal = p.calcularValorTotal();
+        double valorTotal = p.calcularValorTotal();
 
-    JOptionPane.showMessageDialog(null,
+        JOptionPane.showMessageDialog(null,
             "Entrada registrada!\n\n" +
-                    "Produto: " + p.getNome() + "\n" +
-                    "Quantidade adicionada: " + entrada.getQuantidade() + "\n" +
-                    "Saldo anterior: " + antes + "\n" +
-                    "Saldo atual: " + depois + "\n" +
-                    "Valor total atual: R$ " + String.format("%.2f", valorTotal),
+                "Produto: " + p.getNome() + "\n" +
+                "Quantidade adicionada: " + entrada.getQuantidade() + "\n" +
+                "Saldo anterior: " + antes + "\n" +
+                "Saldo atual: " + depois + "\n" +
+                "Valor total atual: R$ " + String.format("%.2f", valorTotal),
             "Entrada registrada",
             JOptionPane.INFORMATION_MESSAGE);
-}
+    }
 
 
+    /**
+     * Registra uma saída de estoque e persiste os dados.
+     *
+     * @param saida instância de {@link SaidaEstoque} contendo os dados da saída
+     */
     public void registrarSaida(SaidaEstoque saida) {
         movimentos.add(saida);
         saida.getProduto().setQuantidade(
@@ -67,6 +100,9 @@ public class ControleEstoque {
         gravarDados();
     }
 
+    /**
+     * Lista os movimentos presentes no sistema, imprimindo-os ordenados por data.
+     */
     public void listarMovimentos() {
         Collections.sort(movimentos);
 
@@ -78,6 +114,9 @@ public class ControleEstoque {
         }
     }
 
+    /**
+     * Imprime no console o saldo atual de cada produto com o valor total por produto.
+     */
     public void consultarSaldoAtual() {
         for (Produto produto : produtos) {
             System.out.println(produto.getNome() + " | " + produto.getQuantidade() + "unidades | R$ "
@@ -85,6 +124,9 @@ public class ControleEstoque {
         }
     }
 
+    /**
+     * Persiste os dados de produtos e movimentos em arquivos CSV.
+     */
     public void gravarDados() {
         gravarProdutos();
         gravarMovimentos();
@@ -113,12 +155,12 @@ public class ControleEstoque {
     }
 
     private void gravarMovimentos() {
-        // Se não houver movimentos, não faz nada
+        /* Se não houver movimentos, não faz nada */
         if (movimentos.isEmpty()) {
             return;
         }
 
-        // Ordenar movimentos antes de gravar
+        /* Ordenar movimentos antes de gravar */
         Collections.sort(movimentos);
 
         try (PrintWriter writer = new PrintWriter(MOVIMENTOS_CSV)) {
@@ -219,7 +261,7 @@ public class ControleEstoque {
 
                 if (produto == null) {
                     System.err.println("Movimento ignorado! Produto não existe mais: " + produtoCodigo);
-                    continue; // ***AQUI CONCERTA TUDO***
+                    continue;
                 }
 
                 if (tipo.equals("ENTRADA")) {
@@ -241,6 +283,12 @@ public class ControleEstoque {
 }
 
 
+    /**
+     * Retorna uma instância de {@link Categoria} correspondente ao nome informado.
+     *
+     * @param nome nome da categoria conforme armazenado no CSV
+     * @return instância de {@link model.categorias.Categoria} ou {@code null} se não existir
+     */
     public Categoria getCategoriaPorNome(String nome) {
         if (nome == null) {
             return null;
@@ -263,6 +311,12 @@ public class ControleEstoque {
         }
     }
 
+    /**
+     * Busca um produto pelo código.
+     *
+     * @param codigo código do produto
+     * @return produto correspondente ou {@code null} se não encontrado
+     */
     public Produto findProdutoPorCodigo(int codigo) {
         for (Produto p : this.produtos) {
             if (p.getCodigo() == codigo) {
@@ -272,6 +326,11 @@ public class ControleEstoque {
         return null;
     }
 
+    /**
+     * Exclui um produto pelo índice da lista e persiste as alterações.
+     *
+     * @param indice posição do produto na lista de gerenciamento
+     */
     public void excluirProduto(int indice) {
         if (indice >= 0 && indice < produtos.size()) {
             produtos.remove(indice);
@@ -279,15 +338,30 @@ public class ControleEstoque {
         gravarDados();
     }
 
+    /**
+     * Retorna uma cópia da lista de todos os produtos cadastrados.
+     *
+     * @return lista de produtos
+     */
     public List<Produto> getTodosProdutos() {
         return new ArrayList<>(produtos);
     }
 
+    /**
+     * Calcula o saldo atual do estoque utilizando o serviço {@link SaldoCalculator}.
+     *
+     * @return resultado com o valor total e as quantidades por produto
+     */
     public SaldoCalculator.ResultadoSaldo calcularSaldoAtual() {
         SaldoCalculator service = new SaldoCalculator();
         return service.calcularSaldo(this.movimentos);
     }
 
+    /**
+     * Retorna a lista de movimentos de estoque atualmente carregada.
+     *
+     * @return lista de movimentos
+     */
     public List<MovimentoEstoque> getMovimentoEstoques(){
         return movimentos;
     }

@@ -11,6 +11,17 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Painel para registrar saídas de produtos do estoque.
+ *
+ * Permite informar código, data e quantidade, validando disponibilidade
+ * e atualizando as telas relacionadas após o registro.
+ *
+ * @author Vinicius Bornhoffen
+ * @author Caio Schumann
+ * @author Arthur Nascimento Pereira
+ * @author Vitor André Pickler
+ */
 public class TelaRegistrarSaida extends JPanel {
 
     private ControleEstoque controle;
@@ -28,7 +39,6 @@ public class TelaRegistrarSaida extends JPanel {
         titulo.setHorizontalAlignment(SwingConstants.CENTER);
         add(titulo, BorderLayout.NORTH);
 
-        // Painel central
         JPanel painelForm = new JPanel(new GridBagLayout());
         painelForm.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
         GridBagConstraints c = new GridBagConstraints();
@@ -36,7 +46,6 @@ public class TelaRegistrarSaida extends JPanel {
         c.insets = new Insets(10, 10, 10, 10);
         c.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campos
         JLabel lblCodigo = new JLabel("Código do Produto:");
         JTextField txtCodigo = new JTextField();
 
@@ -53,7 +62,6 @@ public class TelaRegistrarSaida extends JPanel {
         txtData.setPreferredSize(new Dimension(220, 30));
         txtQuantidade.setPreferredSize(new Dimension(220, 30));
 
-        // Adicionando ao painel
         c.gridx = 0;
         c.gridy = 0;
         painelForm.add(lblCodigo, c);
@@ -84,7 +92,6 @@ public class TelaRegistrarSaida extends JPanel {
 
         painelSaidas.carregarSaidas(controle.getMovimentoEstoques());
 
-        // 👉 Lógica do botão
         btnRegistrar.addActionListener(e -> {
             try {
                 int codigo = Integer.parseInt(txtCodigo.getText().trim());
@@ -108,14 +115,12 @@ public class TelaRegistrarSaida extends JPanel {
                     return;
                 }
 
-                // Estoque insuficiente
                 if (p.getQuantidade() < quantidade) {
                     JOptionPane.showMessageDialog(this, 
                             "Estoque insuficiente! Disponível: " + p.getQuantidade());
                     return;
                 }
 
-                // Registrar saída
                 SaidaEstoque saida = new SaidaEstoque(data, p, quantidade);
 
                 controle.registrarSaida(saida);
@@ -125,7 +130,6 @@ public class TelaRegistrarSaida extends JPanel {
                     telaListarMovimentos.carregarMovimentosDoCSV();
                 }
 
-                // Mostrar impacto no saldo (igual entrada)
                 Produto produto = saida.getProduto();
                 int novaQuantidade = produto.getQuantidade();
                 double valorTotal = produto.calcularValorTotal();
@@ -146,7 +150,6 @@ public class TelaRegistrarSaida extends JPanel {
 
                 JOptionPane.showMessageDialog(this, msg, "Impacto no saldo", JOptionPane.INFORMATION_MESSAGE);
 
-                // Limpar campos
                 txtCodigo.setText("");
                 txtQuantidade.setText("");
                 txtData.setText("");
@@ -159,6 +162,12 @@ public class TelaRegistrarSaida extends JPanel {
         });
     }
 
+    /**
+     * Converte o texto do campo de data para {@link LocalDate} utilizando o formato dd/MM/yyyy.
+     *
+     * @param txtData campo de texto contendo a data
+     * @return {@link LocalDate} ou {@code null} em caso de formato inválido
+     */
     public static LocalDate parseDataDoCampo(JTextField txtData) {
         String dataStr = txtData.getText().trim();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
