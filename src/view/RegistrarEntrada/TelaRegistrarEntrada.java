@@ -8,6 +8,8 @@ import view.ListarMovimentos.TelaListarMovimentos;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class TelaRegistrarEntrada extends JPanel {
 
@@ -96,6 +98,10 @@ public class TelaRegistrarEntrada extends JPanel {
                 int codigo = Integer.parseInt(txtCodigo.getText());
                 int quantidadeEntrada = Integer.parseInt(txtQuantidade.getText());
                 double valorUnitario = Double.parseDouble(txtValor.getText());
+                LocalDate data = parseDataDoCampo(txtData);
+
+                if (data == null)
+                    return;
 
                 Produto p = controle.getTodosProdutos()
                         .stream()
@@ -114,7 +120,7 @@ public class TelaRegistrarEntrada extends JPanel {
 
                 // Registrar a entrada
                 EntradaEstoque entrada = new EntradaEstoque(
-                        LocalDate.now(),
+                        data,
                         p,
                         quantidadeEntrada,
                         valorUnitario);
@@ -122,8 +128,10 @@ public class TelaRegistrarEntrada extends JPanel {
                 controle.registrarEntrada(entrada);
 
                 // ======= VALORES DEPOIS DA ENTRADA ========
-                int quantidadeDepois = p.getQuantidade();
-                double valorDepois = quantidadeDepois * p.getPrecoUnitario();
+                int quantidadeDepois = quantidadeAntes + quantidadeEntrada;
+                double impacto = quantidadeEntrada * valorUnitario;
+
+                double valorDepois = valorAntes + impacto;
 
                 // Atualiza tabela
                 painelEntradas.carregarEntradas(controle.getMovimentoEstoques());
@@ -139,12 +147,14 @@ public class TelaRegistrarEntrada extends JPanel {
                                 "- Quantidade: %d\n" +
                                 "- Valor total: R$ %.2f\n\n" +
                                 "Impacto:\n" +
-                                "+%d unidades adicionadas",
+                                "+%d unidades adicionadas\n" +
+                                "+R$ %.2f adicionados ao valor total",
                         quantidadeAntes,
                         valorAntes,
                         quantidadeDepois,
                         valorDepois,
-                        quantidadeEntrada);
+                        quantidadeEntrada,
+                        impacto);
 
                 JOptionPane.showMessageDialog(this, msg, "Impacto no Saldo", JOptionPane.INFORMATION_MESSAGE);
 
@@ -157,5 +167,21 @@ public class TelaRegistrarEntrada extends JPanel {
                 JOptionPane.showMessageDialog(this, "Preencha os campos corretamente!");
             }
         });
+    }
+
+    public static LocalDate parseDataDoCampo(JTextField txtData) {
+        String dataStr = txtData.getText().trim();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        try {
+            return LocalDate.parse(dataStr, formatter);
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Formato de data inválido! Use dd/MM/yyyy.",
+                    "Erro",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
     }
 }

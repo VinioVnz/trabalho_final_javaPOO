@@ -15,9 +15,9 @@ public class TelaCadastroProdutos extends JPanel {
     private PainelFormularioProduto painelFormulario;
     private PainelTabelaProdutos painelTabela;
 
-    public TelaCadastroProdutos() {
+    public TelaCadastroProdutos(ControleEstoque controleEstoque) {
 
-        controle = new ControleEstoque();
+        this.controle = controleEstoque;
 
         setLayout(new BorderLayout(10, 10));
 
@@ -39,7 +39,7 @@ public class TelaCadastroProdutos extends JPanel {
                 }
             }
         });
-
+        painelTabela.atualizarTabela(controle.getTodosProdutos());
         painelTabela.definirAcaoBotaoRemover(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

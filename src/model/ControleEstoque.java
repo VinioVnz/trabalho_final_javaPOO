@@ -193,52 +193,53 @@ public class ControleEstoque {
     }
 
     private void recuperarMovimentos() {
-        File arquivoMovimentos = new File(MOVIMENTOS_CSV);
+    File arquivoMovimentos = new File(MOVIMENTOS_CSV);
 
-        if (!arquivoMovimentos.exists()) {
-            System.out.println("Arquivo " + MOVIMENTOS_CSV + " não encontrado. Iniciando novo.");
-            return;
-        }
-
-        try (Scanner scannerArquivo = new Scanner(arquivoMovimentos)) {
-
-            while (scannerArquivo.hasNextLine()) {
-                String linha = scannerArquivo.nextLine();
-                Scanner scannerLinha = new Scanner(linha);
-                scannerLinha.useDelimiter(CSV_SEPARATOR);
-                scannerLinha.useLocale(Locale.US);
-
-                try {
-                    String tipo = scannerLinha.next();
-                    LocalDate data = LocalDate.parse(scannerLinha.next());
-                    int produtoCodigo = scannerLinha.nextInt();
-                    int quantidade = scannerLinha.nextInt();
-                    double valorUnit = scannerLinha.nextDouble();
-
-                    Produto produto = findProdutoPorCodigo(produtoCodigo);
-
-                    if (produto != null) {
-                        if (tipo.equals("ENTRADA")) {
-                            EntradaEstoque entrada = new EntradaEstoque(data, produto, quantidade, valorUnit);
-                            this.movimentos.add(entrada);
-                        } else if (tipo.equals("SAIDA")) {
-                            SaidaEstoque saida = new SaidaEstoque(data, produto, quantidade);
-                            this.movimentos.add(saida);
-                        }
-                    } else {
-                        System.err.println("Produto não encontrado para o movimento: " + produtoCodigo);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Erro ao ler linha do movimento: " + linha + " | Erro: " + e.getMessage());
-                }
-                scannerLinha.close();
-            }
-            System.out.println("Movimentos recuperados com sucesso (Scanner).");
-
-        } catch (FileNotFoundException e) {
-            System.err.println("Erro ao recuperar movimentos: " + e.getMessage());
-        }
+    if (!arquivoMovimentos.exists()) {
+        System.out.println("Arquivo " + MOVIMENTOS_CSV + " não encontrado. Iniciando novo.");
+        return;
     }
+
+    try (Scanner scannerArquivo = new Scanner(arquivoMovimentos)) {
+
+        while (scannerArquivo.hasNextLine()) {
+            String linha = scannerArquivo.nextLine();
+            Scanner scannerLinha = new Scanner(linha);
+            scannerLinha.useDelimiter(CSV_SEPARATOR);
+            scannerLinha.useLocale(Locale.US);
+
+            try {
+                String tipo = scannerLinha.next();
+                LocalDate data = LocalDate.parse(scannerLinha.next());
+                int produtoCodigo = scannerLinha.nextInt();
+                int quantidade = scannerLinha.nextInt();
+                double valorUnit = scannerLinha.nextDouble();
+
+                Produto produto = findProdutoPorCodigo(produtoCodigo);
+
+                if (produto == null) {
+                    System.err.println("Movimento ignorado! Produto não existe mais: " + produtoCodigo);
+                    continue; // ***AQUI CONCERTA TUDO***
+                }
+
+                if (tipo.equals("ENTRADA")) {
+                    movimentos.add(new EntradaEstoque(data, produto, quantidade, valorUnit));
+                } else if (tipo.equals("SAIDA")) {
+                    movimentos.add(new SaidaEstoque(data, produto, quantidade));
+                }
+
+            } catch (Exception e) {
+                System.err.println("Erro ao ler linha do movimento: " + linha + " | Erro: " + e.getMessage());
+            }
+            scannerLinha.close();
+        }
+        System.out.println("Movimentos recuperados com sucesso (Scanner).");
+
+    } catch (FileNotFoundException e) {
+        System.err.println("Erro ao recuperar movimentos: " + e.getMessage());
+    }
+}
+
 
     public Categoria getCategoriaPorNome(String nome) {
         if (nome == null) {

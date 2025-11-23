@@ -15,6 +15,7 @@ public class TelaListarMovimentos extends JPanel {
     private JTable tabela;
     private DefaultTableModel modeloTabela;
     private ControleEstoque controle;
+
     public TelaListarMovimentos(ControleEstoque controle) {
         this.controle = controle;
         setLayout(new BorderLayout());
@@ -26,9 +27,8 @@ public class TelaListarMovimentos extends JPanel {
         add(titulo, BorderLayout.NORTH);
 
         modeloTabela = new DefaultTableModel(
-                new Object[]{"Tipo", "Data", "Produto (ID)", "Quantidade", "Valor Unitário"}, 
-                0
-        );
+                new Object[] { "Tipo", "Data", "Produto (ID)", "Quantidade", "Valor Unitário" },
+                0);
 
         tabela = new JTable(modeloTabela);
         tabela.setRowHeight(25);
@@ -42,7 +42,7 @@ public class TelaListarMovimentos extends JPanel {
     public void carregarMovimentosDoCSV() {
         modeloTabela.setRowCount(0);
 
-        String caminho = "movimentos.csv"; 
+        String caminho = "movimentos.csv";
 
         try (BufferedReader br = new BufferedReader(new FileReader(caminho))) {
 
@@ -51,15 +51,22 @@ public class TelaListarMovimentos extends JPanel {
             while ((linha = br.readLine()) != null) {
 
                 String[] partes = linha.split(";");
-                int id = Integer.parseInt(partes[2]);
-                String nome = controle.findProdutoPorCodigo(id).getNome();
+
                 if (partes.length == 5) {
-                    modeloTabela.addRow(new Object[]{
-                            partes[0], // Tipo (ENTRADA/SAIDA)
+
+                    int id = Integer.parseInt(partes[2]);
+
+                    var produto = controle.findProdutoPorCodigo(id);
+                    String nomeProduto = (produto != null)
+                            ? produto.getNome()
+                            : "PRODUTO EXCLUÍDO (ID: " + id + ")";
+
+                    modeloTabela.addRow(new Object[] {
+                            partes[0], // Tipo
                             partes[1], // Data
-                            nome,  // ID do Produto
+                            nomeProduto, // Nome ou aviso
                             partes[3], // Quantidade
-                            partes[4]  // Valor
+                            partes[4] // Valor
                     });
                 }
             }
@@ -69,8 +76,8 @@ public class TelaListarMovimentos extends JPanel {
                     this,
                     "Erro ao ler movimentos do arquivo CSV.",
                     "Erro",
-                    JOptionPane.ERROR_MESSAGE
-            );
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }

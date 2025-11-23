@@ -12,24 +12,29 @@ import view.RegistrarSaida.TelaRegistrarSaida;
 import java.awt.*;
 
 public class TelaPrincipal extends JFrame {
+
     private CardLayout cardLayout;
     private JPanel painelConteudo;
+
 
     private ControleEstoque controleEstoque = new ControleEstoque();
 
     private TelaListarMovimentos telaListarMovimentos = new TelaListarMovimentos(controleEstoque);
     private TelaConsultarSaldo telaConsultarSaldo = new TelaConsultarSaldo(controleEstoque);
-    private TelaCadastroProdutos telaProdutos = new TelaCadastroProdutos();
+    private TelaCadastroProdutos telaProdutos = new TelaCadastroProdutos(controleEstoque);
 
     public TelaPrincipal() {
+
         setTitle("Sistema loja");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+
         PainelLateral painelLateral = new PainelLateral();
         add(painelLateral, BorderLayout.WEST);
+
 
         cardLayout = new CardLayout();
         painelConteudo = new JPanel(cardLayout);
@@ -42,23 +47,28 @@ public class TelaPrincipal extends JFrame {
 
         add(painelConteudo, BorderLayout.CENTER);
 
+
         painelLateral.onProdutos(() -> {
             telaProdutos.getPainelTabelaProdutos()
-                    .atualizarTabela(controleEstoque.getTodosProdutos());
+                    .atualizarTabela(controleEstoque.getTodosProdutos()); 
             mostrarTela("produtos");
         });
 
+
         painelLateral.onMovimentos(() -> {
-            telaListarMovimentos.carregarMovimentosDoCSV();
+            telaListarMovimentos.carregarMovimentosDoCSV(); 
             mostrarTela("movimentos");
         });
 
+
         painelLateral.onEntrada(() -> mostrarTela("registrarEntrada"));
+
 
         painelLateral.onSaida(() -> {
             telaListarMovimentos.carregarMovimentosDoCSV();
             mostrarTela("registrarSaida");
         });
+
 
         painelLateral.onSaldo(() -> {
             telaConsultarSaldo.atualizarSaldo();
