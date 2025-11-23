@@ -172,7 +172,7 @@ public class TelaRegistrarEntrada extends JPanel {
                 txtCodigo.setText("");
                 txtQuantidade.setText("");
                 txtValor.setText("");
-
+                txtData.setText("");
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Preencha os campos corretamente!");
             }
